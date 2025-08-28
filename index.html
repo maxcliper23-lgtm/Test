@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biology Class Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .question-container {
+            transition: opacity 0.3s ease;
+        }
+        .timer-warning {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { background-color: #fef3c7; }
+            50% { background-color: #fde68a; }
+            100% { background-color: #fef3c7; }
+        }
+        .test-complete {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
+        .heart-animation {
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-4 border border-gray-200">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">Biology Class Test</h1>
+                <p class="text-gray-600 mb-6">Test your knowledge of genetics and inheritance patterns</p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Test Instructions</h2>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        Total Time: 18 minutes (individual timers per question)
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        Total Marks: 20 marks
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        Answer all questions in the given time
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        Timer will automatically move to next question when time expires
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        You can navigate between questions using next/previous buttons
+                    </li>
+                </ul>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-2">Question Breakdown</h3>
+                    <p class="text-sm text-blue-700">5 Questions • 20 Marks Total</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="font-semibold text-green-800 mb-2">Time Allocation</h3>
+                    <p class="text-sm text-green-700">Individual timers per question</p>
+                </div>
+            </div>
+
+            <button onclick="startTest()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                Start Test
+            </button>
+        </div>
+    </div>
+
+    <!-- Test Interface -->
+    <div id="test-interface" class="hidden min-h-screen py-8 p-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <h1 class="text-xl font-bold text-gray-800">Biology Test</h1>
+                </div>
+                <div id="timer" class="bg-red-100 text-red-800 px-4 py-2 rounded font-mono text-lg font-bold">
+                    05:00
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>Progress</span>
+                    <span id="progress-text">Question 1 of 5</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <!-- Question Display -->
+            <div id="question-container" class="question-container mb-6">
+                <div class="bg-blue-50 p-6 rounded-lg mb-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <h2 class="text-xl font-semibold text-blue-800" id="question-title">Question 1</h2>
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium" id="question-marks">5 marks</span>
+                    </div>
+                    <p class="text-gray-700 text-lg" id="question-text">Write the three laws of Mendelian inheritance?</p>
+                </div>
+
+                <div class="bg-white border border-gray-300 rounded-lg p-4">
+                    <textarea 
+                        id="answer-textarea" 
+                        class="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        placeholder="Type your answer here..."
+                        oninput="updateCharCount()"
+                    ></textarea>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-sm text-gray-500">Characters: <span id="char-count">0</span></span>
+                        <span class="text-sm text-blue-600">Suggested length: 100-200 words</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between">
+                <button id="prev-btn" onclick="previousQuestion()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Previous
+                </button>
+                <button id="next-btn" onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded">
+                    Next Question
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="test-complete rounded-lg shadow-md p-8 max-w-2xl mx-4 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Test Completed!</h1>
+            <p class="text-gray-600 mb-6">You have successfully completed the biology test.</p>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Performance Summary</h2>
+                <div class="grid grid-cols-2 gap-4 text-gray-700">
+                    <div>Total Questions: <span class="font-bold">5</span></div>
+                    <div>Total Marks: <span class="font-bold">20</span></div>
+                    <div>Time Taken: <span class="font-bold" id="total-time">18:00</span></div>
+                    <div>Status: <span class="font-bold">Completed</span></div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4 heart-animation">Well done budii!</h3>
+                <div class="space-y-3 text-blue-700 text-lg">
+                    <p class="heart-animation" style="animation-delay: 0.2s;">I love you ❤️</p>
+                    <p class="heart-animation" style="animation-delay: 0.4s;">Thank you for studying today</p>
+                    <p class="heart-animation" style="animation-delay: 0.6s;">I am so proud of you!</p>
+                    <p class="heart-animation" style="animation-delay: 0.8s;">You did an amazing job completing all the questions</p>
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="bg-blue-600 text-white px-8 py-3 rounded font-semibold hover:bg-blue-700">
+                Take Another Test
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "Write the three laws of Mendelian inheritance?",
+                marks: 5,
+                time: 5 * 60,
+                answer: ""
+            },
+            {
+                text: "Write about chromosomal theory?",
+                marks: 5,
+                time: 5 * 60,
+                answer: ""
+            },
+            {
+                text: "Explain haemophilia?",
+                marks: 3,
+                time: 3 * 60,
+                answer: ""
+            },
+            {
+                text: "Write about chromosomal disorder?",
+                marks: 3,
+                time: 3 * 60,
+                answer: ""
+            },
+            {
+                text: "Short note: a) Incomplete dominance b) Co-dominance",
+                marks: 4,
+                time: 2 * 60,
+                answer: ""
+            }
+        ];
+
+        let currentQuestion = 0;
+        let timer;
+        let timeLeft;
+        let totalTimeTaken = 0;
+        let testStartTime;
+
+        function startTest() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('test-interface').classList.remove('hidden');
+            testStartTime = Date.now();
+            loadQuestion(0);
+        }
+
+        function loadQuestion(index) {
+            currentQuestion = index;
+            const question = questions[index];
+            
+            // Update UI
+            document.getElementById('question-title').textContent = `Question ${index + 1}`;
+            document.getElementById('question-text').textContent = question.text;
+            document.getElementById('question-marks').textContent = `${question.marks} marks`;
+            document.getElementById('answer-textarea').value = question.answer;
+            document.getElementById('char-count').textContent = question.answer.length;
+            
+            // Update progress
+            document.getElementById('progress-text').textContent = `Question ${index + 1} of ${questions.length}`;
+            document.getElementById('progress-bar').style.width = `${((index + 1) / questions.length) * 100}%`;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = index === 0;
+            document.getElementById('next-btn').textContent = index === questions.length - 1 ? 'Finish Test' : 'Next Question';
+            
+            // Start timer
+            startTimer(question.time);
+        }
+
+        function updateCharCount() {
+            const textarea = document.getElementById('answer-textarea');
+            const charCount = textarea.value.length;
+            document.getElementById('char-count').textContent = charCount;
+            questions[currentQuestion].answer = textarea.value;
+        }
+
+        function startTimer(seconds) {
+            clearInterval(timer);
+            timeLeft = seconds;
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (currentQuestion < questions.length - 1) {
+                        nextQuestion();
+                    } else {
+                        finishTest();
+                    }
+                }
+                
+                // Warning when 30 seconds left
+                if (timeLeft === 30) {
+                    document.getElementById('timer').classList.add('timer-warning');
+                    document.getElementById('timer').classList.add('bg-red-200');
+                    document.getElementById('timer').classList.add('text-red-800');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function nextQuestion() {
+            // Save current answer
+            questions[currentQuestion].answer = document.getElementById('answer-textarea').value;
+            
+            if (currentQuestion < questions.length - 1) {
+                loadQuestion(currentQuestion + 1);
+            } else {
+                finishTest();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                // Save current answer
+                questions[currentQuestion].answer = document.getElementById('answer-textarea').value;
+                loadQuestion(currentQuestion - 1);
+            }
+        }
+
+        function finishTest() {
+            clearInterval(timer);
+            totalTimeTaken = Math.floor((Date.now() - testStartTime) / 1000);
+            
+            // Calculate total time in minutes and seconds
+            const minutes = Math.floor(totalTimeTaken / 60);
+            const seconds = totalTimeTaken % 60;
+            document.getElementById('total-time').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('test-interface').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
